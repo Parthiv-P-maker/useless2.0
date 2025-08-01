@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ship Spinner 2.0</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #fce4ec, #e1f5fe);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #4a148c;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .back-button:hover {
+      background-color: #7b1fa2;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #d81b60;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    select, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #d81b60;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ad1457;
+    }
+
+    #wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 10px solid #ec407a;
+      margin-top: 30px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    #result {
+      font-size: 22px;
+      color: #6a1b9a;
+      margin-top: 30px;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+    
+  <a href="menu.html" class="back-button">← Back to menu</a>
+  <h1>✨ Spin to Ship ✨</h1>
+  <div class="controls">
+    <label for="ship-type">Choose Ship Type:</label>
+    <select id="ship-type">
+      <option value="Romantic">💘 Romantic</option>
+      <option value="Friendship">🤝 Friendship</option>
+      <option value="Academic">📚 Academic</option>
+      <option value="Gaming">🎮 Gaming</option>
+      <option value="Creative">🎨 Creative</option>
+      <option value="Business">💼 Business</option>
+    </select>
+    <br>
+    <button onclick="spinWheel()">🚀 Spin Now</button>
+  </div>
+  <canvas id="wheel" width="300" height="300"></canvas>
+  <div id="result"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1rsOoQjBS1qhwhUNZSfMlRkS2hgJQTMQ",
+      authDomain: "useless---p2.firebaseapp.com",
+      databaseURL: "https://useless---p2-default-rtdb.firebaseio.com",
+      projectId: "useless---p2",
+      storageBucket: "useless---p2.appspot.com",
+      messagingSenderId: "387646944392",
+      appId: "1:387646944392:web:b87cd889fc93d8139bdb3d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const userRef = ref(db, "users");
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const resultDiv = document.getElementById("result");
+
+    let usernames = [];
+
+    onValue(userRef, (snapshot) => {
+      usernames = [];
+      snapshot.forEach(child => {
+        const user = child.val();
+        if (user.username) usernames.push(user.username);
+      });
+      drawWheel();
+    });
+
+    function drawWheel() {
+      const center = canvas.width / 2;
+      const radius = center;
+      const angleStep = (2 * Math.PI) / usernames.length;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      usernames.forEach((name, i) => {
+        const angle = i * angleStep;
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, angle, angle + angleStep);
+        ctx.fillStyle = `hsl(${i * 360 / usernames.length}, 70%, 80%)`;
+        ctx.fill();
+        ctx.fillStyle = "#222";
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(angle + angleStep / 2);
+        ctx.textAlign = "right";
+        ctx.font = "14px Arial";
+        ctx.fillText(name, radius - 10, 5);
+        ctx.restore();
+      });
+    }
+
+    function spinWheel() {
+      if (usernames.length < 2) {
+        alert("❌ Not enough users to spin.");
+        return;
+      }
+
+      const type = document.getElementById("ship-type").value;
+      const emojis = {
+        Romantic: "❤️", Friendship: "🤝", Academic: "📘",
+        Gaming: "🎮", Creative: "🎨", Business: "💼"
+      };
+
+      const shuffled = usernames.sort(() => 0.5 - Math.random());
+      const user1 = shuffled[0];
+      const user2 = shuffled[1];
+
+      let angle = 0;
+      const spins = 25;
+      const interval = setInterval(() => {
+        angle += 20;
+        if (angle >= spins * 360) {
+          clearInterval(interval);
+          resultDiv.innerHTML = `💫 You created a <b>${type}</b> ship between <b>${user1}</b> ${emojis[type]} <b>${user2}</b>!`;
+        }
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+        drawWheel();
+        ctx.restore();
+      }, 30);
+    }
+
+    // Expose spinWheel to global scope for inline onclick
+    window.spinWheel = spinWheel;
+  </script>
+</body>
+</html>
