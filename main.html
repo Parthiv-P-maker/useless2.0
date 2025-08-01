@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Hub</title>
+  <style>
+    body {
+      background: #fff8e7;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #6a0572;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 150px;
+      border-radius: 16px;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .updates { background: #cce3f7; color: #6b3700; }
+    .vitaloo { background: #d8c2e2; color: #5d287c; }
+    .timetable { background: #d9a441; color: #3d2801; }
+    .info { background: #f16a2f; }
+    .services { background: #d5d1f0; color: #7c5ca0; }
+
+    @media (max-width: 500px) {
+      .card {
+        height: 120px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌸 WYGINS+</h1>
+
+  <div class="grid">
+    <div class="card updates" onclick="alert('Navigating to Team Updates')">
+      📚 Team Updates
+    </div>
+    <div class="card vitaloo" onclick="alert('Navigating to Vitalooo...!!')">
+      🧘‍♀️ Vitalooo...!!
+    </div>
+    <div class="card timetable" onclick="alert('Navigating to Time Table')">
+      🕒 Time Table
+    </div>
+    <div class="card info" onclick="alert('Navigating to Info')">
+      🍂 Info
+    </div>
+    <div class="card services" onclick="alert('Navigating to New Services')">
+      ✨ New Services
+    </div>
+  </div>
+</body>
+</html>
