@@ -1,146 +1,112 @@
-<!DOCTYPE html>
+<!DOCTYPE html> // menu.html 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Menu | PollZone</title>
   <style>
-  @import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
-
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    /* Chalkboard background: dark green with texture effect */
-    background: #2a4d23 url('https://www.toptal.com/designers/subtlepatterns/patterns/dark_wall_3.png');
-    color: #fff;
-    min-height: 100vh;
-  }
-
-  /* 🔷 Navbar */
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #39542a; /* Dark chalkboard green */
-    border-bottom: 4px solid #f7c948; /* Yellow chalk line */
-    color: #fff;
-    padding: 18px 30px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
-    font-family: 'Architects Daughter', cursive;
-  }
-
-  .navbar .logo {
-    font-size: 26px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 1px #143e0c;
-  }
-
-  .user-menu {
-    position: relative;
-    cursor: pointer;
-  }
-
-  .user-button {
-    background: none;
-    border: 2px dashed #f7c948; /* dashed "chalk" border */
-    border-radius: 8px;
-    color: #f7c948;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-family: 'Architects Daughter', cursive;
-  }
-
-  .user-button:hover {
-    background: #f7c948;
-    color: #2a4d23;
-    border-color: #2a4d23;
-  }
-
-  .dropdown {
-    display: none;
-    position: absolute;
-    top: 110%;
-    right: 0;
-    background: #4a6a3a;
-    color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    z-index: 10;
-    font-family: 'Architects Daughter', cursive;
-  }
-
-  .dropdown button {
-    padding: 12px 18px;
-    width: 100%;
-    border: none;
-    background: none;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.2s;
-    color: #f7c948;
-    border-bottom: 1px solid #f7c948;
-  }
-
-  .dropdown button:last-child {
-    border-bottom: none;
-  }
-
-  .dropdown button:hover {
-    background: #f7c948;
-    color: #2a4d23;
-    font-weight: bold;
-  }
-
-  /* 🔳 Grid Buttons */
-  .main-content {
-    max-width: 720px;
-    margin: 100px auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 30px;
-    padding: 0 20px;
-  }
-
-  .main-button {
-    background: #f7c948; /* Yellow chalk color */
-    padding: 40px 20px;
-    font-size: 22px;
-    font-weight: 700;
-    border: 3px solid #2a4d23;
-    border-radius: 24px;
-    box-shadow: 8px 8px 0 #2a4d23; /* “3D” shadow like crayons */
-    cursor: pointer;
-    color: #2a4d23;
-    font-family: 'Architects Daughter', cursive;
-    text-shadow: 0 2px 0 #9b7d0e;
-    transition: transform 0.25s ease, box-shadow 0.3s ease;
-    user-select: none;
-  }
-
-  .main-button:hover {
-    transform: translateY(-6px) rotate(-3deg);
-    box-shadow: 12px 12px 0 #1e391a;
-    background: #fff5b1;
-  }
-
-  .main-button:active {
-    transform: translateY(-2px) rotate(2deg);
-    box-shadow: 6px 6px 0 #1e391a;
-  }
-
-  @media (max-width: 500px) {
-    .main-content {
-      margin-top: 60px;
-      gap: 20px;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f3e5f5, #e1f5fe);
+      color: #333;
+      min-height: 100vh;
     }
-  }
-</style>
 
+    /* 🔷 Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #7e57c2, #42a5f5);
+      color: white;
+      padding: 18px 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .logo {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .user-menu {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .user-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 110%;
+      right: 0;
+      background: white;
+      color: black;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .dropdown button {
+      padding: 12px 18px;
+      width: 100%;
+      border: none;
+      background: none;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .dropdown button:hover {
+      background: #f1f1f1;
+    }
+
+    /* 🔳 Grid Buttons */
+    .main-content {
+      max-width: 700px;
+      margin: 100px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 0 20px;
+    }
+
+    .main-button {
+      background: white;
+      padding: 35px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      color: #6200ea;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .main-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+      background: #ede7f6;
+    }
+
+    @media (max-width: 500px) {
+      .main-content {
+        margin-top: 60px;
+        gap: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="navbar">

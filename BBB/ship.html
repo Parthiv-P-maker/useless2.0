@@ -12,31 +12,67 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
+      padding-top: 60px;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #ffffffcc;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .back-button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
       background-color: #4a148c;
       color: white;
-      padding: 10px 16px;
+      padding: 8px 12px;
       border: none;
       border-radius: 6px;
       text-decoration: none;
       cursor: pointer;
-      transition: background-color 0.2s ease;
     }
+
     .back-button:hover {
       background-color: #7b1fa2;
+    }
+
+    .notif-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .notif-button {
+      font-size: 14px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #eeeeee;
+      cursor: pointer;
+    }
+
+    #notif-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background-color: red;
+      color: white;
+      font-size: 12px;
+      border-radius: 50%;
+      padding: 2px 6px;
+      display: none;
     }
 
     h1 {
       font-size: 36px;
       color: #d81b60;
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
 
     .controls {
@@ -83,13 +119,26 @@
       color: #6a1b9a;
       margin-top: 30px;
       max-width: 80%;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-    
-  <a href="menu.html" class="back-button">← Back to menu</a>
+
+  <!-- TOP BAR WITH BACK BUTTON + NOTIFICATION -->
+  <div class="top-bar">
+    <a href="menu.html" class="back-button">← Back to menu</a>
+
+    <div class="notif-wrapper">
+      <button id="notif-btn" class="notif-button">🔔 Notifications</button>
+      <span id="notif-count">0</span>
+    </div>
+  </div>
+
+  <!-- PAGE TITLE -->
   <h1>✨ Spin to Ship ✨</h1>
+
+  <!-- SHIP CONTROLS -->
   <div class="controls">
     <label for="ship-type">Choose Ship Type:</label>
     <select id="ship-type">
@@ -103,12 +152,16 @@
     <br>
     <button onclick="spinWheel()">🚀 Spin Now</button>
   </div>
+
+  <!-- WHEEL + RESULT -->
   <canvas id="wheel" width="300" height="300"></canvas>
   <div id="result"></div>
 
+  <!-- FIREBASE AND JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB1rsOoQjBS1qhwhUNZSfMlRkS2hgJQTMQ",
@@ -122,21 +175,53 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const userRef = ref(db, "users");
+    const auth = getAuth();
 
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
     const resultDiv = document.getElementById("result");
+    const notifCountSpan = document.getElementById("notif-count");
+    const notifBtn = document.getElementById("notif-btn");
+
+    notifBtn.onclick = () => {
+      window.location.href = "notifi.html";
+    };
 
     let usernames = [];
+    let userMap = {}; // username => user data
+    let currentUserData = null;
 
+    // Load all users
+    const userRef = ref(db, "users");
     onValue(userRef, (snapshot) => {
       usernames = [];
+      userMap = {};
       snapshot.forEach(child => {
         const user = child.val();
-        if (user.username) usernames.push(user.username);
+        if (user.username) {
+          usernames.push(user.username);
+          userMap[user.username] = { ...user, id: child.key };
+        }
       });
       drawWheel();
+    });
+
+    // Track auth user
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const currentRef = ref(db, `users/${user.uid}`);
+        onValue(currentRef, (snap) => {
+          currentUserData = snap.val();
+        });
+
+        // Notification count
+        const notifRef = ref(db, `notifications/${user.uid}`);
+        onValue(notifRef, (snapshot) => {
+          const count = snapshot.size;
+          notifCountSpan.textContent = count;
+          notifCountSpan.style.display = count > 0 ? "inline-block" : "none";
+        });
+      }
     });
 
     function drawWheel() {
@@ -164,8 +249,8 @@
     }
 
     function spinWheel() {
-      if (usernames.length < 2) {
-        alert("❌ Not enough users to spin.");
+      if (usernames.length < 2 || !currentUserData) {
+        alert("❌ Not enough users or user not loaded.");
         return;
       }
 
@@ -176,17 +261,43 @@
       };
 
       const shuffled = usernames.sort(() => 0.5 - Math.random());
-      const user1 = shuffled[0];
-      const user2 = shuffled[1];
+      const user1 = currentUserData.username;
+      let user2 = shuffled.find(name => name !== user1);
+
+      if (!user2) {
+        alert("❌ No other user available to ship.");
+        return;
+      }
 
       let angle = 0;
-      const spins = 25;
+      const spins = 3;
       const interval = setInterval(() => {
-        angle += 20;
+        angle += 30;
         if (angle >= spins * 360) {
           clearInterval(interval);
           resultDiv.innerHTML = `💫 You created a <b>${type}</b> ship between <b>${user1}</b> ${emojis[type]} <b>${user2}</b>!`;
+
+          // Send notification to user2
+          const user2Id = userMap[user2]?.id;
+          if (user2Id) {
+            const notifRef = ref(db, `notifications/${user2Id}`);
+            const newRef = push(notifRef);
+            set(newRef, {
+              type: "ship",
+              shipType: type,
+              fromUser: {
+                id: auth.currentUser.uid,
+                username: user1
+              },
+              toUser: {
+                id: user2Id,
+                username: user2
+              },
+              timestamp: Date.now()
+            });
+          }
         }
+
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -197,7 +308,6 @@
       }, 30);
     }
 
-    // Expose spinWheel to global scope for inline onclick
     window.spinWheel = spinWheel;
   </script>
 </body>
